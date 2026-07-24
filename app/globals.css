@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
   --background: #faf8f5;
@@ -25,7 +25,7 @@
   --font-mono: var(--font-geist-mono), monospace;
 }
 
-/* ─── Base ──────────────────────────────────────────────── */
+/* â”€â”€â”€ Base â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 html {
   scroll-behavior: smooth;
 }
@@ -51,7 +51,7 @@ a, button, [role="button"], label, select, summary {
   color: var(--accent);
 }
 
-/* ─── Custom Scrollbar ───────────────────────────────────── */
+/* â”€â”€â”€ Custom Scrollbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -67,12 +67,12 @@ a, button, [role="button"], label, select, summary {
   background: var(--text-muted);
 }
 
-/* ─── Probe Cursor ───────────────────────────────────────── */
+/* â”€â”€â”€ Probe Cursor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .probe-hoverable {
   cursor: none;
 }
 
-/* ─── Animations ─────────────────────────────────────────── */
+/* â”€â”€â”€ Animations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
@@ -93,7 +93,7 @@ a, button, [role="button"], label, select, summary {
   50% { box-shadow: 0 0 60px rgba(16, 185, 129, 0.2); }
 }
 
-/* ─── Utility Classes ────────────────────────────────────── */
+/* â”€â”€â”€ Utility Classes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .animate-shimmer {
   background: linear-gradient(
     90deg,
@@ -136,6 +136,11 @@ a, button, [role="button"], label, select, summary {
   animation: shimmer 3s linear infinite;
 }
 
+/* Wow section: floating chaos elements */
+.wow-float-element {
+  animation: wow-float 4s ease-in-out infinite;
+}
+
 /* Section divider line */
 .section-divider {
   width: 100%;
@@ -149,7 +154,7 @@ a, button, [role="button"], label, select, summary {
   );
 }
 
-/* ─── Reduced Motion ─────────────────────────────────────────── */
+/* â”€â”€â”€ Reduced Motion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 /* When user has opted into reduced motion:
    - Restore the native cursor (CursorProbe already returns null via JS)
    - Disable CSS animations and transitions
@@ -174,4 +179,6 @@ a, button, [role="button"], label, select, summary {
     cursor: auto !important;
   }
 }
+
+
 
