@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion } from "framer-motion";
@@ -30,6 +30,8 @@ export default function InsightFlow() {
   const lineFillRef = useRef(null);
   const cardRefs = useRef([]);
   const badgeRefs = useRef([]);
+  const timelineRef = useRef(null); // store tl so badges can seek it
+  const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
     let ctx;
@@ -63,6 +65,9 @@ export default function InsightFlow() {
             invalidateOnRefresh: true,
             onUpdate: (self) => {
               scrollState.insightFlowComplete = self.progress >= 0.92;
+              // Keep activeIdx in sync for badge aria-selected
+              const idx = self.progress < 0.35 ? 0 : self.progress < 0.75 ? 1 : 2;
+              setActiveIdx(idx);
             },
             onLeave: () => {
               scrollState.insightFlowComplete = true;
@@ -72,6 +77,7 @@ export default function InsightFlow() {
             },
           },
         });
+        timelineRef.current = tl;
 
         const stageTransition = (fromIdx, toIdx, lineScale) => {
           tl.to(lineFillRef.current, { scaleY: lineScale, duration: 1.5, ease: "none" });
@@ -105,6 +111,15 @@ export default function InsightFlow() {
       ctx?.revert();
     };
   }, []);
+
+  // Click handler: smoothly seek the pinned timeline to target stage
+  const handleBadgeClick = (stageIdx) => {
+    const tl = timelineRef.current;
+    if (!tl) return;
+    // Stage progress breakpoints: 0 → 0.05, 1 → 0.40, 2 → 0.80
+    const targets = [0.05, 0.40, 0.80];
+    gsap.to(tl, { progress: targets[stageIdx], duration: 0.5, ease: "power2.inOut" });
+  };
 
   return (
     <section
@@ -141,7 +156,7 @@ export default function InsightFlow() {
         <div className="relative flex gap-10 md:gap-16 items-start">
 
           {/* Left side: Vertical spine indicator */}
-          <div className="relative w-12 flex flex-col items-center py-1 flex-shrink-0">
+          <div className="relative w-12 flex flex-col items-center py-1 flex-shrink-0" role="tablist" aria-label="Pipeline stages" aria-orientation="vertical">
             {/* Spine track */}
             <div className="absolute top-0 bottom-0 w-[1px] bg-surface-border pointer-events-none z-0" />
             {/* Spine fill — GSAP drives scaleY; no CSS transition */}
@@ -153,13 +168,24 @@ export default function InsightFlow() {
             {/* Badges container — aligned to match card height */}
             <div className="flex flex-col justify-between h-[280px] relative z-10">
               {STAGES.map((stage, i) => (
-                <div
+                <button
                   key={stage.step}
                   ref={(el) => (badgeRefs.current[i] = el)}
-                  className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold border border-surface-border bg-surface text-foreground"
+                  role="tab"
+                  id={`stage-tab-${i}`}
+                  aria-selected={activeIdx === i}
+                  aria-controls={`stage-panel-${i}`}
+                  onClick={() => handleBadgeClick(i)}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowDown") { e.preventDefault(); handleBadgeClick(Math.min(i + 1, STAGES.length - 1)); }
+                    if (e.key === "ArrowUp") { e.preventDefault(); handleBadgeClick(Math.max(i - 1, 0)); }
+                  }}
+                  tabIndex={activeIdx === i ? 0 : -1}
+                  aria-label={`Go to stage ${stage.step}: ${stage.label}`}
+                  className="probe-target w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold border border-surface-border bg-surface text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 transition-colors duration-200"
                 >
                   {stage.step}
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -170,6 +196,9 @@ export default function InsightFlow() {
               <div
                 key={stage.step}
                 ref={(el) => (cardRefs.current[i] = el)}
+                role="tabpanel"
+                id={`stage-panel-${i}`}
+                aria-labelledby={`stage-tab-${i}`}
                 className="probe-target absolute inset-x-0 top-0 p-8 rounded-2xl border border-surface-border bg-surface/60 backdrop-blur-sm hover:bg-surface"
                 style={{
                   opacity: i === 0 ? 1 : 0,

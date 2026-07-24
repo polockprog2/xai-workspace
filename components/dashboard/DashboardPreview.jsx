@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useState, useId, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { mockData } from "@/lib/mockData";
 
@@ -52,13 +52,15 @@ function Sparkline({ data, color = "var(--accent)" }) {
   );
 }
 
-function StatCard({ label, value, index }) {
+function StatCard({ label, value, index, pulsing = false }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="probe-target p-5 rounded-xl border border-surface-border bg-surface/60 hover:bg-surface hover:shadow-md hover:border-accent/20 transition-all duration-300 group"
+      className={`probe-target p-5 rounded-xl border bg-surface/60 hover:bg-surface hover:shadow-md transition-all duration-300 group ${
+        pulsing ? "border-accent/50 shadow-[0_0_16px_var(--accent-glow)]" : "border-surface-border hover:border-accent/20"
+      }`}
     >
       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted mb-2.5">
         {label.replace(/([A-Z])/g, " $1").trim()}
@@ -84,12 +86,48 @@ const STATUS_STYLES = {
 
 export default function DashboardPreview() {
   const [activeTab, setActiveTab] = useState("overview");
+  // Live data tick — increments anomaly count every 3-5s
+  const [liveCount, setLiveCount] = useState(mockData.dashboard.overview.anomaliesEscalated);
+  const [tickPulse, setTickPulse] = useState(false);
 
-  const tabs = [
+  useEffect(() => {
+    let timer;
+    const schedule = () => {
+      const delay = 3000 + Math.random() * 2000;
+      timer = setTimeout(() => {
+        setLiveCount((c) => c + 1);
+        setTickPulse(true);
+        setTimeout(() => setTickPulse(false), 800);
+        schedule();
+      }, delay);
+    };
+    schedule();
+    return () => clearTimeout(timer);
+  }, []);
+
+  const tabs = useMemo(() => [
     { id: "overview", label: "System Overview" },
     { id: "activity", label: "Mitigation Log" },
     { id: "models", label: "Model Health" },
-  ];
+  ], []);
+
+  // Keyboard navigation for tabs
+  const handleTabKeyDown = useCallback((e, currentIdx) => {
+    const tabIds = tabs.map((t) => t.id);
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      setActiveTab(tabIds[(currentIdx + 1) % tabIds.length]);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      setActiveTab(tabIds[(currentIdx - 1 + tabIds.length) % tabIds.length]);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setActiveTab(tabIds[0]);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setActiveTab(tabIds[tabIds.length - 1]);
+    }
+  }, [tabs]);
 
   return (
       <section id="dashboard" className="relative py-28 px-8 border-b border-surface-border pointer-events-none min-h-[120vh]">
@@ -134,12 +172,18 @@ export default function DashboardPreview() {
             </div>
 
             {/* Tab bar */}
-            <div className="flex gap-1 px-5 py-2.5 border-b border-surface-border bg-surface/20">
-              {tabs.map((tab) => (
+            <div className="flex gap-1 px-5 py-2.5 border-b border-surface-border bg-surface/20" role="tablist" aria-label="Dashboard sections">
+              {tabs.map((tab, tabIdx) => (
                 <button
                   key={tab.id}
+                  role="tab"
+                  id={`dash-tab-${tab.id}`}
+                  aria-selected={activeTab === tab.id}
+                  aria-controls={`dash-panel-${tab.id}`}
+                  tabIndex={activeTab === tab.id ? 0 : -1}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`probe-target relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${activeTab === tab.id ? "text-foreground" : "text-text-muted hover:text-foreground/80"
+                  onKeyDown={(e) => handleTabKeyDown(e, tabIdx)}
+                  className={`probe-target relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 ${activeTab === tab.id ? "text-foreground" : "text-text-muted hover:text-foreground/80"
                     }`}
                 >
                   {activeTab === tab.id && (
@@ -155,7 +199,14 @@ export default function DashboardPreview() {
             </div>
 
             {/* Content */}
-            <div className="p-6 min-h-[320px]">
+            <div
+              className="p-6 min-h-[320px]"
+              role="tabpanel"
+              id={`dash-panel-${activeTab}`}
+              aria-labelledby={`dash-tab-${activeTab}`}
+              aria-live="polite"
+              tabIndex={0}
+            >
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
@@ -165,10 +216,15 @@ export default function DashboardPreview() {
                   transition={{ duration: 0.22 }}
                 >
                   {activeTab === "overview" && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {Object.entries(mockData.dashboard.overview).map(([key, value], i) => (
-                        <StatCard key={key} label={key} value={value} index={i} />
-                      ))}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4" aria-label="System overview statistics">
+                      {Object.entries(mockData.dashboard.overview).map(([key, value], i) => {
+                        // Replace anomaliesEscalated value with the live-ticking count
+                        const displayValue = key === "anomaliesEscalated" ? liveCount : value;
+                        const isLive = key === "anomaliesEscalated";
+                        return (
+                          <StatCard key={key} label={key} value={displayValue} index={i} pulsing={isLive && tickPulse} />
+                        );
+                      })}
                     </div>
                   )}
 

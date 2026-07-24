@@ -17,6 +17,8 @@ export default function Navbar() {
 
   return (
     <motion.header
+      role="navigation"
+      aria-label="Main navigation"
       initial={{ y: -64, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
@@ -30,6 +32,7 @@ export default function Navbar() {
         {/* Logo */}
         <motion.a
           href="#"
+          aria-label="Xai Intelligence Workspace — scroll to top"
           className="probe-target flex items-center gap-1.5 select-none"
           whileHover={{ opacity: 0.8 }}
           transition={{ duration: 0.15 }}

@@ -148,3 +148,30 @@ a, button, [role="button"], label, select, summary {
     transparent 100%
   );
 }
+
+/* ─── Reduced Motion ─────────────────────────────────────────── */
+/* When user has opted into reduced motion:
+   - Restore the native cursor (CursorProbe already returns null via JS)
+   - Disable CSS animations and transitions
+   - Keep layout and functional styles intact                      */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  body,
+  a,
+  button,
+  [role="button"],
+  label,
+  select,
+  summary {
+    cursor: auto !important;
+  }
+}
+

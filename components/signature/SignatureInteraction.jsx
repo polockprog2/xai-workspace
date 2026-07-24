@@ -68,7 +68,7 @@ export default function SignatureInteraction() {
         className="relative z-10 flex flex-col items-center gap-12 w-full max-w-4xl pointer-events-auto"
       >
         {/* Header text */}
-        <div className="text-center mt-[18vh]">
+        <div className="text-center mt-[18vh]" aria-live="assertive" aria-atomic="true">
           <AnimatePresence mode="wait">
             <motion.div
               key={mitigated ? "secured" : "detected"}
@@ -119,7 +119,9 @@ export default function SignatureInteraction() {
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ duration: 0.25 }}
-                className="probe-target relative overflow-hidden group px-7 py-3.5 rounded-full bg-accent text-white font-semibold text-base shadow-[0_0_36px_var(--accent-glow)] hover:shadow-[0_0_56px_var(--accent-glow-strong)] transition-shadow duration-300"
+                aria-pressed={mitigated}
+                aria-label="Trigger Hold on Node CC-9082 — initiate autonomous mitigation protocol"
+                className="probe-target relative overflow-hidden group px-7 py-3.5 rounded-full bg-accent text-white font-semibold text-base shadow-[0_0_36px_var(--accent-glow)] hover:shadow-[0_0_56px_var(--accent-glow-strong)] transition-shadow duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
               >
                 <div className="absolute inset-0 bg-white/15 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                 <span className="relative z-10 flex items-center gap-3">

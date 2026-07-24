@@ -2,10 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { scrollState } from "@/lib/scrollState";
 
 export default function CursorProbe() {
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  // Detect prefers-reduced-motion — lazy init reads matchMedia once, then listens for changes
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
@@ -20,10 +26,19 @@ export default function CursorProbe() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // Watch for prefers-reduced-motion changes at runtime
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mqHandler = (e) => setReducedMotion(e.matches);
+    mq.addEventListener("change", mqHandler);
+
     const handleMouseMove = (e) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
       if (!isVisible) setIsVisible(true);
+
+      // Write normalized parallax coords (−0.5 to +0.5) to shared state
+      scrollState.mouseParallaxX = (e.clientX / window.innerWidth) - 0.5;
+      scrollState.mouseParallaxY = (e.clientY / window.innerHeight) - 0.5;
 
       const target = e.target;
       const isTarget = target.closest && target.closest(".probe-target");
@@ -38,11 +53,15 @@ export default function CursorProbe() {
     document.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
+      mq.removeEventListener("change", mqHandler);
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
     };
   }, [mouseX, mouseY, isVisible]);
+
+  // When user prefers reduced motion: render nothing — browser default cursor takes over
+  if (reducedMotion) return null;
 
   return (
     <>
