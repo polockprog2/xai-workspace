@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf8f5;
+  --foreground: #1c1917;
+  --accent: #c2410c; /* Rust */
+  --accent-glow: rgba(194, 65, 12, 0.15);
+  --accent-glow-strong: rgba(194, 65, 12, 0.25);
+  --surface: #f4efe9;
+  --surface-border: #e4dacb;
+  --text-muted: #6b645c;
+  --success-glow: rgba(16, 185, 129, 0.12);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-glow: var(--accent-glow);
+  --color-accent-glow-strong: var(--accent-glow-strong);
+  --color-surface: var(--surface);
+  --color-surface-border: var(--surface-border);
+  --color-text-muted: var(--text-muted);
+  --font-sans: var(--font-geist-sans), "Inter", sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+/* ─── Base ──────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: none;
+}
+
+/* Hide cursor everywhere except where accessibility needs it */
+a, button, [role="button"], label, select, summary {
+  cursor: none;
+}
+
+/* Custom selection styling */
+::selection {
+  background-color: var(--accent-glow);
+  color: var(--accent);
+}
+
+/* ─── Custom Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 99px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ─── Probe Cursor ───────────────────────────────────────── */
+.probe-hoverable {
+  cursor: none;
+}
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow); }
+  50% { box-shadow: 0 0 30px var(--accent-glow-strong), 0 0 60px var(--accent-glow); }
+}
+
+@keyframes success-glow-pulse {
+  0%, 100% { box-shadow: 0 0 30px var(--success-glow); }
+  50% { box-shadow: 0 0 60px rgba(16, 185, 129, 0.2); }
+}
+
+/* ─── Utility Classes ────────────────────────────────────── */
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--accent-glow) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Glass morphism surface */
+.glass-surface {
+  background: rgba(244, 239, 233, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(228, 218, 203, 0.8);
+}
+
+/* Accent text shimmer */
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--accent) 0%,
+    #e05a1a 40%,
+    var(--accent) 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Section divider line */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--surface-border) 30%,
+    var(--surface-border) 70%,
+    transparent 100%
+  );
+}
