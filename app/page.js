@@ -46,6 +46,8 @@ export default function Home() {
         {/* Scroll buffer — keeps Transformation below the fold until Dashboard finishes */}
         <div id="dashboard-buffer" className="h-[45vh] pointer-events-none" aria-hidden />
         <TransformationSection />
+        {/* Scroll buffer — keeps footer below the fold until Transformation finishes */}
+        <div id="transformation-buffer" className="h-[40vh] pointer-events-none" aria-hidden />
       </main>
 
       {/* Footer */}

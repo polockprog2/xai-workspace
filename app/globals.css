@@ -141,6 +141,44 @@ a, button, [role="button"], label, select, summary {
   animation: wow-float 4s ease-in-out infinite;
 }
 
+/* Wow section: expanding pulse ring around CTA button */
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+
+/* Scan line that sweeps vertically during analysis phase */
+@keyframes scan-sweep {
+  0% { top: -2px; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: calc(100% + 2px); opacity: 0; }
+}
+.animate-scan-sweep {
+  animation: scan-sweep 2.8s ease-in-out infinite;
+}
+
+/* Brief white flash overlay on mitigation trigger */
+@keyframes success-flash {
+  0% { opacity: 0.18; }
+  100% { opacity: 0; }
+}
+.animate-success-flash {
+  animation: success-flash 0.6s ease-out forwards;
+}
+
+/* Breathing glow for the CTA button */
+@keyframes breathe-glow {
+  0%, 100% { box-shadow: 0 0 24px var(--accent-glow), 0 0 48px var(--accent-glow); }
+  50% { box-shadow: 0 0 36px var(--accent-glow-strong), 0 0 72px var(--accent-glow); }
+}
+.animate-breathe-glow {
+  animation: breathe-glow 2.4s ease-in-out infinite;
+}
+
 /* Section divider line */
 .section-divider {
   width: 100%;

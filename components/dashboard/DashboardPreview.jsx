@@ -4,9 +4,8 @@ import { useState, useId, useEffect, useCallback, useMemo, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion";
 import { mockData } from "@/lib/mockData";
 
-// ---------------------------------------------------------------------------
+
 // Icons — small inline set, no external dependency
-// ---------------------------------------------------------------------------
 
 const iconProps = { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" };
 
@@ -29,9 +28,6 @@ const IconBell = () => (
   <svg {...iconProps} width="15" height="15"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
 );
 
-// ---------------------------------------------------------------------------
-// People — the humans behind the automation
-// ---------------------------------------------------------------------------
 
 const ANALYSTS = [
   { name: "Dana R.", color: "#6366f1" },
@@ -131,10 +127,7 @@ function PresencePill() {
   );
 }
 
-// ---------------------------------------------------------------------------
 // Sparkline — compact, for KPI cards
-// ---------------------------------------------------------------------------
-
 function Sparkline({ data, color = "var(--accent)" }) {
   const id = useId();
   const gradId = `sg-${id.replace(/:/g, "")}`;
@@ -232,10 +225,8 @@ function StatCard({ label, value, index, pulsing = false, sparklineData }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Area chart — the centerpiece
-// ---------------------------------------------------------------------------
 
+// Area chart — the centerpiece
 const RANGE_POINTS = { "24h": 6, "7d": 14, "30d": undefined };
 
 function AreaChart({ seriesA, seriesB }) {
@@ -312,10 +303,7 @@ function AreaChart({ seriesA, seriesB }) {
   );
 }
 
-// ---------------------------------------------------------------------------
 // Radial gauge — model accuracy
-// ---------------------------------------------------------------------------
-
 function RadialGauge({ value, size = 46, stroke = 4, color = "var(--accent)" }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
@@ -342,10 +330,7 @@ const STATUS_STYLES = {
   cleared: { dot: "bg-text-muted", badge: "bg-surface-border/60 text-text-muted" },
 };
 
-// ---------------------------------------------------------------------------
 // Review queue — act on cases without leaving overview
-// ---------------------------------------------------------------------------
-
 function ReviewQueue({ items, resolvedIds, assignedOverride, onTake, onClear }) {
   const list = items.filter((it) => (it.status === "escalated" || it.status === "processing") && !resolvedIds.has(it.id)).slice(0, 5);
 
@@ -406,10 +391,8 @@ function ReviewQueue({ items, resolvedIds, assignedOverride, onTake, onClear }) 
   );
 }
 
-// ---------------------------------------------------------------------------
-// Cases table — sortable, searchable, selectable
-// ---------------------------------------------------------------------------
 
+// Cases table — sortable, searchable, selectable
 function SortableTh({ label, onClick, active, dir }) {
   return (
     <th className="px-3 py-2 text-left cursor-pointer select-none whitespace-nowrap" onClick={onClick}>
@@ -546,10 +529,8 @@ function CasesTable({ items, resolvedIds, assignedOverride, onClear, query, setQ
   );
 }
 
-// ---------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------
 
+// Main
 export default function DashboardPreview() {
   const [activeSection, setActiveSection] = useState("overview");
   const [range, setRange] = useState("7d");
@@ -647,9 +628,9 @@ export default function DashboardPreview() {
           <div className="rounded-2xl border border-surface-border bg-background/95 shadow-[0_24px_80px_rgba(28,25,23,0.08)] overflow-hidden backdrop-blur-xl">
             <div className="flex items-center gap-3 px-5 py-3.5 border-b border-surface-border bg-surface/80">
               <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-400/80" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400/80" />
-                <div className="w-3 h-3 rounded-full bg-green-400/80" />
+                <div className="w-3 h-3 rounded-full bg-black" />
+                <div className="w-3 h-3 rounded-full bg-black" />
+                <div className="w-3 h-3 rounded-full bg-black" />
               </div>
               <div className="flex-1 flex justify-center">
                 <div className="px-4 py-1 rounded-md bg-background border border-surface-border text-xs text-text-muted font-mono select-none">

@@ -107,10 +107,10 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tight leading-[1.02] mb-6">
+          <h1 className="text-6xl md:text-8xl font-bold tracking-tight leading-[1.02] mb-6 ">
             Raw Data.
             <br />
-            <span className="relative inline-block">
+            <span className="relative inline-block -ml-20">
               <span className="text-accent drop-shadow-[0_0_40px_var(--accent-glow)]">
                 Structured&nbsp;Intelligence.
               </span>

@@ -15,9 +15,19 @@ export default function DataCore() {
   const pointsRef = useRef();
   const linesRef = useRef();
   const groupRef = useRef();
+  const pulseRingRef = useRef();
 
   const count = 1600;
   const { size } = useThree();
+
+  // Per-particle stagger delay for mitigation dispersal (deterministic)
+  const dispersalStagger = useMemo(() => {
+    const stagger = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      stagger[i] = seededRandom(i * 2.7) * 0.4; // 0–0.4s offset
+    }
+    return stagger;
+  }, [count]);
 
   // Highlighted fraud nodes in Signature stage
   const fraudNodes = useMemo(() => {
@@ -253,32 +263,47 @@ export default function DataCore() {
       }
 
       // --- SIGNATURE INTERACTION MITIGATION EFFECT (Stage 4) ---
-      // If we are in the Signature section and the user has triggered auto-mitigation,
-      // we disperse/repel the anomaly particles (which are associated with hub 3 / fraud nodes)
       if (scrollState.activeStage === 3 && scrollState.mitigationProgress > 0) {
         const hubIdx = i % 4;
         const mit = scrollState.mitigationProgress;
 
         if (hubIdx === 3) {
-          // Explode the fraud nodes outward or push them into a wide orbital shell
+          // Staggered dispersal — each particle has a unique delay offset
+          const particleDelay = dispersalStagger[i];
+          const localMit = Math.max(0, Math.min(1, (mit - particleDelay) / (1 - particleDelay)));
+
           const angle = ((i / 4) / (count / 4)) * Math.PI * 2;
           const fraudHubX = 1.2 * 1.2 * 0.8;
           const fraudHubY = -0.8 * 1.2 * 0.8;
           const fraudHubZ = 0.4 * 1.2 * 1.6;
-          const targetRad = 0.7 + mit * 2.8; // Expand radius dramatically
+          const targetRad = 0.7 + localMit * 2.8;
           const targetX = fraudHubX + Math.cos(angle) * targetRad;
           const targetY = fraudHubY + Math.sin(angle) * targetRad;
-          const targetZ = fraudHubZ + Math.sin(t * 3.0 + i) * (mit * 0.8);
+          const targetZ = fraudHubZ + Math.sin(t * 3.0 + i) * (localMit * 0.8);
 
-          x = THREE.MathUtils.lerp(x, targetX, mit);
-          y = THREE.MathUtils.lerp(y, targetY, mit);
-          z = THREE.MathUtils.lerp(z, targetZ, mit);
+          x = THREE.MathUtils.lerp(x, targetX, localMit);
+          y = THREE.MathUtils.lerp(y, targetY, localMit);
+          z = THREE.MathUtils.lerp(z, targetZ, localMit);
 
-          // Morph color from warning Rust to safe, neutralized forest-green/gray
-          const cTarget = new THREE.Color("#475569"); // neutral slate
-          colorArr[idx3] = THREE.MathUtils.lerp(particleColors[idx3], cTarget.r, mit);
-          colorArr[idx3 + 1] = THREE.MathUtils.lerp(particleColors[idx3 + 1], cTarget.g, mit);
-          colorArr[idx3 + 2] = THREE.MathUtils.lerp(particleColors[idx3 + 2], cTarget.b, mit);
+          // Flash effect — brief white brightness spike at start of mitigation
+          const flashIntensity = mit < 0.08 ? Math.sin((mit / 0.08) * Math.PI) * 0.6 : 0;
+          const cFlash = new THREE.Color("#ffffff");
+          const cTarget = new THREE.Color("#475569");
+          colorArr[idx3] = THREE.MathUtils.lerp(
+            particleColors[idx3],
+            cTarget.r,
+            localMit
+          ) + flashIntensity * (cFlash.r - particleColors[idx3]);
+          colorArr[idx3 + 1] = THREE.MathUtils.lerp(
+            particleColors[idx3 + 1],
+            cTarget.g,
+            localMit
+          ) + flashIntensity * (cFlash.g - particleColors[idx3 + 1]);
+          colorArr[idx3 + 2] = THREE.MathUtils.lerp(
+            particleColors[idx3 + 2],
+            cTarget.b,
+            localMit
+          ) + flashIntensity * (cFlash.b - particleColors[idx3 + 2]);
         }
       } else {
         // Reset colors back to original
@@ -319,12 +344,38 @@ export default function DataCore() {
         lineOpacity = THREE.MathUtils.lerp(0.7, 0.15, m - 4.5);
       }
 
-      // Shrink / break lines in Signature mode when mitigated
+      // Line snap + fade — brief brightness spike at start, then break
       if (scrollState.activeStage === 3 && scrollState.mitigationProgress > 0) {
-        lineOpacity *= (1 - scrollState.mitigationProgress); // fade out lines as network breaks
+        const mit = scrollState.mitigationProgress;
+        // Snap spike: lines briefly hit full brightness at mit 0–0.06
+        const snapSpike = mit < 0.06 ? 1.0 : 0;
+        // Then fade out proportionally
+        const fadeOut = Math.max(0, 1 - mit);
+        lineOpacity = Math.max(snapSpike, lineOpacity * fadeOut);
       }
 
       linesRef.current.material.opacity = lineOpacity;
+    }
+
+    // --- PULSE RING on mitigation trigger ---
+    if (pulseRingRef.current) {
+      const mit = scrollState.mitigationProgress;
+      if (scrollState.activeStage === 3 && mit > 0) {
+        // Ring expands from fraud hub center, opacity fades out
+        const ringScale = 0.5 + mit * 5.0;
+        pulseRingRef.current.scale.set(ringScale, ringScale, ringScale);
+        pulseRingRef.current.material.opacity = Math.max(0, 0.5 * (1 - mit));
+        // Color lerps from rust to emerald
+        const ringColor = new THREE.Color().lerpColors(
+          new THREE.Color("#c2410c"),
+          new THREE.Color("#10b981"),
+          mit
+        );
+        pulseRingRef.current.material.color.copy(ringColor);
+        pulseRingRef.current.visible = true;
+      } else {
+        pulseRingRef.current.visible = false;
+      }
     }
 
     // --- BASE ROTATION SPIN ---
@@ -387,6 +438,19 @@ export default function DataCore() {
           color="#c2410c"
           transparent={true}
           opacity={0.015}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
+
+      {/* Pulse ring — expands from fraud hub on mitigation */}
+      <mesh ref={pulseRingRef} position={[1.2 * 1.2 * 0.8, -0.8 * 1.2 * 0.8, 0.4 * 1.2 * 1.6]} visible={false}>
+        <ringGeometry args={[0.8, 1.0, 64]} />
+        <meshBasicMaterial
+          color="#c2410c"
+          transparent={true}
+          opacity={0}
+          side={THREE.DoubleSide}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
