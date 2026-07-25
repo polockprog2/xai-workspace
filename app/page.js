@@ -15,8 +15,6 @@ import TransformationSection from "@/components/wow/TransformationSection";
 const PersistentScene = dynamic(() => import("@/components/scene/PersistentScene"), { ssr: false });
 
 
-
-// â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function Home() {
   useScrollProgress();
 
@@ -37,17 +35,16 @@ export default function Home() {
       <main id="main-content" className="relative z-10 w-full flex flex-col">
         <Hero />
         <InsightFlow />
-        {/* Scroll buffer â€” keeps next section below the fold until InsightFlow finishes */}
+        {/* Scroll buffer — keeps next section below the fold until InsightFlow finishes */}
         <div id="insight-flow-buffer" className="h-[45vh] pointer-events-none" aria-hidden />
         <SignatureInteraction />
-        {/* Scroll buffer â€” keeps Dashboard below the fold until Signature finishes */}
-        <div id="signature-buffer" className="h-[100vh] pointer-events-none" aria-hidden />
-        <DashboardPreview />
-        {/* Scroll buffer — keeps Transformation below the fold until Dashboard finishes */}
-        <div id="dashboard-buffer" className="h-[45vh] pointer-events-none" aria-hidden />
+        {/* Scroll buffer — keeps Transformation below the fold until Signature finishes */}
+        <div id="signature-buffer" className="h-[80vh] pointer-events-none" aria-hidden />
         <TransformationSection />
-        {/* Scroll buffer — keeps footer below the fold until Transformation finishes */}
-        <div id="transformation-buffer" className="h-[40vh] pointer-events-none" aria-hidden />
+        {/* Scroll buffer — keeps Dashboard below the fold until Transformation finishes */}
+        <div id="transformation-buffer" className="h-[60vh] pointer-events-none" aria-hidden />
+        <DashboardPreview />
+        <div id="dashboard-buffer" className="h-[45vh] pointer-events-none" aria-hidden />
       </main>
 
       {/* Footer */}

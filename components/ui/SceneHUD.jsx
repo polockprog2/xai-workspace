@@ -11,7 +11,8 @@ const STAGE_META = [
   { stage:  1, camera: "ANALYZE VIEW",  mode: "Hub Clusters",       color: "text-accent" },
   { stage:  2, camera: "INSIGHT VIEW",  mode: "Fraud Ring",         color: "text-accent" },
   { stage:  3, camera: "SIGNATURE",     mode: "Node Network",       color: "text-accent" },
-  { stage:  4, camera: "DASHBOARD",     mode: "Receding Core",      color: "text-text-muted/60" },
+  { stage:  4, camera: "TRANSFORM",     mode: "Fraud Network",      color: "text-accent" },
+  { stage:  5, camera: "DASHBOARD",     mode: "Receding Core",      color: "text-text-muted/60" },
 ];
 
 function getMetaForStage(stage) {
@@ -92,12 +93,14 @@ function CameraModeBadge() {
 
 // ─── Morph Progress Strip (bottom-left) ───
 const PHASE_STRIPS = [
-  { from: 0.00, to: 0.15, label: "Raw Data" },
-  { from: 0.15, to: 0.35, label: "Ingest" },
-  { from: 0.35, to: 0.55, label: "Analyze" },
-  { from: 0.55, to: 0.72, label: "Insight" },
-  { from: 0.72, to: 0.88, label: "Signature" },
-  { from: 0.88, to: 1.00, label: "Dashboard" },
+  { from: 0.00, to: 0.13, label: "Raw Data" },
+  { from: 0.13, to: 0.30, label: "Ingest" },
+  { from: 0.30, to: 0.47, label: "Analyze" },
+  { from: 0.47, to: 0.61, label: "Insight" },
+  { from: 0.61, to: 0.76, label: "Signature" },
+  { from: 0.76, to: 0.85, label: "Scan" },
+  { from: 0.85, to: 0.92, label: "Result" },
+  { from: 0.92, to: 1.00, label: "Dashboard" },
 ];
 
 function MorphProgressStrip() {

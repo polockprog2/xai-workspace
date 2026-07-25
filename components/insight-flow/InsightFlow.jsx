@@ -162,7 +162,7 @@ export default function InsightFlow() {
             {/* Spine fill — GSAP drives scaleY; no CSS transition */}
             <div
               ref={lineFillRef}
-              className="absolute top-0 w-[1px] h-full bg-accent shadow-[0_0_10px_var(--accent)] origin-top pointer-events-none z-0"
+              className="absolute top-0 w-[1px] h-full bg-accent origin-bottom pointer-events-none z-0"
             />
 
             {/* Badges container — aligned to match card height */}

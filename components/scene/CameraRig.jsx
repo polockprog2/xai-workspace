@@ -12,7 +12,8 @@ const PARALLAX_STRENGTH = {
    "1": 0.2,   // Analyze: subtle (pinned)
    "2": 0.25,  // Insight: subtle
    "3": 0.45,  // Signature: visible — interactive moment
-   "4": 0.15,  // Dashboard: minimal
+   "4": 0.4,   // Transformation: visible — scan reveal
+   "5": 0.15,  // Dashboard: minimal
 };
 
 export default function CameraRig() {
