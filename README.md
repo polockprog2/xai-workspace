@@ -72,3 +72,29 @@ To run the Xai prototype locally:
 - **Intentional Easing**: We avoided linear or default easings, opting for custom cubic-bezier curves (e.g., `ease: [0.16, 1, 0.3, 1]`) to create a snappy yet smooth, premium feel comparable to top-tier enterprise landing pages.
 - **Performance First**: The Three.js scenes are dynamically imported to prevent SSR hydration errors and improve Initial Load times. Particle counts were capped at 3,000 to ensure smooth 60fps execution on mid-range devices.
 - **Separation of Concerns**: GSAP was used exclusively for scroll-driven, timeline-based events where absolute positioning and sequential locking were required, while Framer Motion was delegated to component-level mounting, unmounting, and micro-interactions (like the dashboard tabs). This prevents the two engines from conflicting over DOM elements.
+
+
+
+####
+Task List — 3D Integration, Interactivity & Accessibility Upgrade
+3D Integration
+ Create components/ui/SceneHUD.jsx — camera mode badge + morph progress bar
+ Add mouseParallaxX/Y fields to lib/scrollState.js
+ Update CursorProbe.jsx to write normalized mouse coords to scrollState
+ Update CameraRig.jsx to apply mouse parallax offset
+ Wire SceneHUD into app/page.js (replace PhaseLabel)
+Interactivity
+ Update Hero.jsx — make metric chips hoverable with tooltips + aria-labels
+ Update InsightFlow.jsx — make step badges clickable to jump stages
+ Update DashboardPreview.jsx — live data tick + aria-live + keyboard nav
+Accessibility
+ Update globals.css — prefers-reduced-motion block
+ Update CursorProbe.jsx — detect reduced motion, return null if set
+ Update app/layout.js — skip-to-content link
+ Update app/page.js — add id="main-content" to main
+ Update Navbar.jsx — role + aria-label
+ Update Hero.jsx — aria-labels on CTAs + metrics region
+ Update SignatureInteraction.jsx — aria-live + aria-pressed
+Verification
+ npm run lint passes
+ npm run build succeeds
