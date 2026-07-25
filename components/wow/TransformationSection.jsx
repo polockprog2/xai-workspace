@@ -55,8 +55,8 @@ export default function TransformationSection() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
 
   // Map the section's scroll range to 0–1 scan progress
-  // Scan completes early (by ~60% through section) so hold phase has room
-  const scanProgress = useTransform(scrollYProgress, [0.15, 0.6], [0, 1]);
+  // Scan starts when section center enters viewport, completes at 60% through
+  const scanProgress = useTransform(scrollYProgress, [0.2, 0.8], [0, 1]);
 
   useEffect(() => {
     if (reducedMotion) {
@@ -101,7 +101,7 @@ export default function TransformationSection() {
       </motion.div>
 
       {/* Placeholder spacer — the 3D scene IS the visualization */}
-      <div />
+      <div className="relative z-10 w-full max-w-5xl h-[320px] sm:h-[420px] pointer-events-auto" />
     </section>
   );
 }
